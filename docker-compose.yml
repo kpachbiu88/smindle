@@ -1,0 +1,42 @@
+name: smindle
+
+services:
+  mariadb:
+    image: bitnami/mariadb:latest
+    container_name: mariadb
+    restart: always
+    ports:
+      - 3306:3306
+    volumes: 
+      - mariadb_data:/bitnami/mariadb
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+      MARIADB_USER: bn_myapp
+      MARIADB_DATABASE: bitnami_myapp
+    networks:
+      - laravel-network
+
+  laravel:
+    image: bitnami/laravel:latest
+    container_name: laravel
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - ./smindle:/app
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USERNAME: bn_myapp
+      DB_DATABASE: bitnami_myapp
+    networks:
+      - laravel-network
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:
+
+networks:
+  laravel-network:
+    name: laravel-network
